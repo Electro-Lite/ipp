@@ -1,0 +1,80 @@
+<program> -> IPPcode22 <body>
+<body> -> <instruction> <body>
+<body> -> eps
+<Instruction> -> <MOVE>
+<MOVE> -> "MOVE" <var> <symb>
+<Instruction> -> <CREATEFRAME>
+<CREATEFRAME> -> "CREATEFRAME"
+<Instruction> -> <PUSHFRAME>
+<PUSHFRAME> -> "PUSHFRAME"
+<Instruction> -> <POPFRAME>
+<POPFRAME> -> "POPFRAME"
+<Instruction> -> <DEFVAR>
+<DEFVAR> -> "DEFVAR" <var>
+<Instruction> -> <CALL>
+<CALL> -> <label>
+<Instruction> -> <RETURN>
+<RETURN> -> "RETURN"
+<Instruction> -> <PUSHS>
+<PUSHS> -> "PUSHS" <symb>
+<Instruction> -> <POPS>
+<POPS> -> "POPS" <var>
+<Instruction> -> <ADD>
+<ADD> -> "ADD" <var> <symb_Int> <symb_Int>
+<Instruction> -> <SUB>
+<SUB> -> "SUB" <var> <symb_Int> <symb_Int>
+<Instruction> -> <MUL>
+<MUL> -> "MUL" <var> <symb_Int> <symb_Int>
+<Instruction> -> <IDIV>
+<IDIV> -> "IDIV" <var> <symb_Int> <symb_Int>
+<Instruction> -> <LT>
+<LT> -> "LT" <var> <symb_same_type>
+<symb_same_type> -> <symb_Int> <symb_Int>
+<symb_same_type> -> <symb_Str> <symb_Str>
+<symb_same_type> -> <symb_Bool> <symb_Bool>
+<Instruction> -> <GT>
+<GT> -> "GT" <var>  <symb_same_type>
+<Instruction> -> <EQ>
+<EQ> -> "EQ" <var> <symb_same_type>
+<Instruction> -> <AND>
+<AND> -> "AND" <var> <symb_Bool> <symb_Bool>
+<Instruction> -> <OR>
+<OR> -> "OR" <var> <symb_Bool> <symb_Bool>
+<Instruction> -> <NOT>
+<NOT> -> "NOT" <var> <symb_Bool>
+<Instruction> -> <INT2CHAR>
+<INT2CHAR> -> "INT2CHAR" <var> <symb>
+<Instruction> -> <STR2INT>
+<STR2INT> -> "STR2INT" <var> <symb> <symb>
+<Instruction> -> <READ>
+<READ> -> "READ" <var> <type>
+<Instruction> -> <WRITE>
+<WRITE> -> "WRITE" <symb>
+<Instruction> -> <CONCAT>
+<CONCAT> -> "CONCAT" <var> <symb> <symb>
+<Instruction> -> <STRLEN>
+<STRLEN> -> "STRLEN" <var> <symb>
+<Instruction> -> <GETCHAR>
+<GETCHAR> -> "GETCHAR" <var> <symb> <symb>
+<Instruction> -> <SETCHAR>
+<SETCHAR> -> "SETCHAR" <var> <symb> <symb>
+<Instruction> -> <TYPE>
+<TYPE> -> "TYPE" <var> <symb>
+<Instruction> -> <LABEL>
+<LABEL> -> "LABEL" <label>
+<Instruction> -> <JUMP>
+<JUMP> -> "JUMP" <label>
+<Instruction> -> <JUMPIFEQ>
+<JUMPIFEQ> -> "JUMPIFEQ" <label> <symb> <symb>
+<Instruction> -> <JUMPIFNEQ>
+<JUMPIFNEQ> -> "JUMPIFNEQ" <label> <symb> <symb>
+<Instruction> -> <EXIT>
+<EXIT> -> "EXIT" <symb>
+<Instruction> -> <DPRINT>
+<DPRINT> -> "DPRINT" <symb>
+<Instruction> -> <BREAK>
+<BREAK> -> "BREAK"
+<type> ->
+<var> ->
+<symb> ->
+<label> ->
