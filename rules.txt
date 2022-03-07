@@ -1,78 +1,78 @@
 <program> -> IPPcode22 <body>
 <body> -> <instruction> <body>
 <body> -> eps
-<Instruction> -> <MOVE>
+<instruction> -> <MOVE>
 <MOVE> -> "MOVE" <var> <symb>
-<Instruction> -> <CREATEFRAME>
+<instruction> -> <CREATEFRAME>
 <CREATEFRAME> -> "CREATEFRAME"
-<Instruction> -> <PUSHFRAME>
+<instruction> -> <PUSHFRAME>
 <PUSHFRAME> -> "PUSHFRAME"
-<Instruction> -> <POPFRAME>
+<instruction> -> <POPFRAME>
 <POPFRAME> -> "POPFRAME"
-<Instruction> -> <DEFVAR>
+<instruction> -> <DEFVAR>
 <DEFVAR> -> "DEFVAR" <var>
-<Instruction> -> <CALL>
+<instruction> -> <CALL>
 <CALL> -> <label>
-<Instruction> -> <RETURN>
+<instruction> -> <RETURN>
 <RETURN> -> "RETURN"
-<Instruction> -> <PUSHS>
+<instruction> -> <PUSHS>
 <PUSHS> -> "PUSHS" <symb>
-<Instruction> -> <POPS>
+<instruction> -> <POPS>
 <POPS> -> "POPS" <var>
-<Instruction> -> <ADD>
+<instruction> -> <ADD>
 <ADD> -> "ADD" <var> <symb_Int> <symb_Int>
-<Instruction> -> <SUB>
+<instruction> -> <SUB>
 <SUB> -> "SUB" <var> <symb_Int> <symb_Int>
-<Instruction> -> <MUL>
+<instruction> -> <MUL>
 <MUL> -> "MUL" <var> <symb_Int> <symb_Int>
-<Instruction> -> <IDIV>
+<instruction> -> <IDIV>
 <IDIV> -> "IDIV" <var> <symb_Int> <symb_Int>
-<Instruction> -> <LT>
+<instruction> -> <LT>
 <LT> -> "LT" <var> <symb_same_type>
 <symb_same_type> -> <symb_Int> <symb_Int>
 <symb_same_type> -> <symb_Str> <symb_Str>
 <symb_same_type> -> <symb_Bool> <symb_Bool>
-<Instruction> -> <GT>
+<instruction> -> <GT>
 <GT> -> "GT" <var>  <symb_same_type>
-<Instruction> -> <EQ>
+<instruction> -> <EQ>
 <EQ> -> "EQ" <var> <symb_same_type>
-<Instruction> -> <AND>
+<instruction> -> <AND>
 <AND> -> "AND" <var> <symb_Bool> <symb_Bool>
-<Instruction> -> <OR>
+<instruction> -> <OR>
 <OR> -> "OR" <var> <symb_Bool> <symb_Bool>
-<Instruction> -> <NOT>
+<instruction> -> <NOT>
 <NOT> -> "NOT" <var> <symb_Bool>
-<Instruction> -> <INT2CHAR>
+<instruction> -> <INT2CHAR>
 <INT2CHAR> -> "INT2CHAR" <var> <symb>
-<Instruction> -> <STR2INT>
+<instruction> -> <STR2INT>
 <STR2INT> -> "STR2INT" <var> <symb> <symb>
-<Instruction> -> <READ>
+<instruction> -> <READ>
 <READ> -> "READ" <var> <type>
-<Instruction> -> <WRITE>
+<instruction> -> <WRITE>
 <WRITE> -> "WRITE" <symb>
-<Instruction> -> <CONCAT>
+<instruction> -> <CONCAT>
 <CONCAT> -> "CONCAT" <var> <symb> <symb>
-<Instruction> -> <STRLEN>
+<instruction> -> <STRLEN>
 <STRLEN> -> "STRLEN" <var> <symb>
-<Instruction> -> <GETCHAR>
+<instruction> -> <GETCHAR>
 <GETCHAR> -> "GETCHAR" <var> <symb> <symb>
-<Instruction> -> <SETCHAR>
+<instruction> -> <SETCHAR>
 <SETCHAR> -> "SETCHAR" <var> <symb> <symb>
-<Instruction> -> <TYPE>
+<instruction> -> <TYPE>
 <TYPE> -> "TYPE" <var> <symb>
-<Instruction> -> <LABEL>
+<instruction> -> <LABEL>
 <LABEL> -> "LABEL" <label>
-<Instruction> -> <JUMP>
+<instruction> -> <JUMP>
 <JUMP> -> "JUMP" <label>
-<Instruction> -> <JUMPIFEQ>
+<instruction> -> <JUMPIFEQ>
 <JUMPIFEQ> -> "JUMPIFEQ" <label> <symb> <symb>
-<Instruction> -> <JUMPIFNEQ>
+<instruction> -> <JUMPIFNEQ>
 <JUMPIFNEQ> -> "JUMPIFNEQ" <label> <symb> <symb>
-<Instruction> -> <EXIT>
+<instruction> -> <EXIT>
 <EXIT> -> "EXIT" <symb>
-<Instruction> -> <DPRINT>
+<instruction> -> <DPRINT>
 <DPRINT> -> "DPRINT" <symb>
-<Instruction> -> <BREAK>
+<instruction> -> <BREAK>
 <BREAK> -> "BREAK"
 <type> ->
 <var> ->

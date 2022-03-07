@@ -19,6 +19,8 @@ function deb($str){
 }
 
 function Get_Token() {
+  static $EOL_bool=false;
+  $char="";
   $Token = new stdClass; $Token->data="";$Token->type="";
   $letters="qwertzuioplkjhgfdsayxcvbnmQWERTZUIOPLKJHGFDSAYXCVBNM";
   $numbers="0123456789";
@@ -26,8 +28,15 @@ function Get_Token() {
   global $fp;
   $state="s1";
   while(true){
-    //if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");} //TODo unsure here
 
+    if(($char=="\n")or($char=="\r")){
+      if (($EOL_bool==false)and ($state!="d1")) {
+        $Token->type="EOL";
+        $EOL_bool=true;
+        return $Token;
+      }else {$EOL_bool=false;}
+
+    }
     if ($state=="s1") {
       if (false === ($char = fgetc($fp))) {if (feof($fp)) {$state="f3";$Token->data.=$char;continue;}exit("fgetc failed in s1");} //TODo unsure here
       deb("s1");//print_r($Token);
@@ -61,7 +70,7 @@ function Get_Token() {
     if ($state=="s4") {
       deb("s4");
       while (true) { //TODo white space # a tak
-        if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
+        if (false === ($char = fgetc($fp))) {exit("s4 fgetc failed");}
         if ( ($char=="\n") or ($char==" ") or ($char=="\r") ) {
           $state="d1";
           break;
