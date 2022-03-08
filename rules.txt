@@ -43,9 +43,9 @@
 <instruction> -> <NOT>
 <NOT> -> "NOT" <var> <symb_Bool>
 <instruction> -> <INT2CHAR>
-<INT2CHAR> -> "INT2CHAR" <var> <symb>
+<INT2CHAR> -> "INT2CHAR" <var> <symb_Int>
 <instruction> -> <STR2INT>
-<STR2INT> -> "STR2INT" <var> <symb> <symb>
+<STR2INT> -> "STR2INT" <var> <symb_Str> <symb_Int>
 <instruction> -> <READ>
 <READ> -> "READ" <var> <type>
 <instruction> -> <WRITE>
