@@ -2,9 +2,8 @@
 <?php
 
 function kok(){
-  echo "ugotme";
+  return true;
 }
-$str="kok";
-$str();
+echo (kok());
 // Display the employee contents
 ?>

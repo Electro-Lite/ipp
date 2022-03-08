@@ -13,12 +13,17 @@ function Get_Token_test() {
   }
 }
 
-function deb($str){
+function deb_lex($str){
   //echo("$str"."\n");
   return;
 }
+function Get_Token(){
+  $Token=fce();
+  echo "Lex_";print_r($Token);
+  return $Token;
+}
 
-function Get_Token() {
+function fce() {
   static $EOL_bool=false;
   $char="";
   $Token = new stdClass; $Token->data="";$Token->type="";
@@ -39,7 +44,7 @@ function Get_Token() {
     }
     if ($state=="s1") {
       if (false === ($char = fgetc($fp))) {if (feof($fp)) {$state="f3";$Token->data.=$char;continue;}exit("fgetc failed in s1");} //TODo unsure here
-      deb("s1");//print_r($Token);
+      deb_lex("s1");//print_r($Token);
       if ($char==" ") {continue;}
       if ($char=="\n") {continue;}
       if ($char=="\r") {continue;}
@@ -49,7 +54,7 @@ function Get_Token() {
       //if ($char=="@") {$state="s5";continue;}
     }
     if ($state=="s2") {
-      deb("s2");
+      deb_lex("s2");
       for ($i=0; $i < 9; $i++) {
         if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
         $Token->data.=$char;
@@ -60,7 +65,7 @@ function Get_Token() {
       }else{exit("header fail, expected .IPPcode22, got: $Token->data");}
     }
     if ($state=="s3") {
-      deb("s3");
+      deb_lex("s3");
       while (($char!="\n")and($char!="\r")) {
         if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
       }
@@ -68,7 +73,7 @@ function Get_Token() {
       continue;
     }
     if ($state=="s4") {
-      deb("s4");
+      deb_lex("s4");
       while (true) { //TODo white space # a tak
         if (false === ($char = fgetc($fp))) {exit("s4 fgetc failed");}
         if ( ($char=="\n") or ($char==" ") or ($char=="\r") ) {
@@ -102,7 +107,7 @@ function Get_Token() {
       continue;
     }
     if ($state=="s8") {
-      deb("s8");
+      deb_lex("s8");
       $Token->bool_data="";
       if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
         $Token->data.=$char;
@@ -128,7 +133,7 @@ function Get_Token() {
       }
     }
     if ($state=="s9") {
-      deb("s9");
+      deb_lex("s9");
       for ($i=0; $i < 3; $i++) {
         if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
         $Token->data.=$char;
@@ -139,7 +144,7 @@ function Get_Token() {
       return $Token;
     }
     if ($state=="f6") {
-      deb("f6");
+      deb_lex("f6");
       $Token->string_data="";
       while (true) { //TODo # ? BTW nevyřešil jsem zde \ASCII
         if (false === ($char = fgetc($fp))) {exit("f6 fgetc failed");}
@@ -151,7 +156,7 @@ function Get_Token() {
       return $Token;
     }
     if ($state=="f8") {
-      deb("f8");
+      deb_lex("f8");
       $Token->int_data="";
       while (($char!="\n")and($char!=" ")and($char!="\r")) { //TODo # ? BTW nevyřešil jsem zde \ASCII
         if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
@@ -165,7 +170,7 @@ function Get_Token() {
       return $Token;
     }
     if ($state=="f9") {
-      deb("f9");
+      deb_lex("f9");
       $Token->type="variable";
       while (true) {
         if (false === ($char = fgetc($fp))) {exit("f9 fgetc failed");}
@@ -177,7 +182,7 @@ function Get_Token() {
       }
     }
     if ($state=="d1"){
-      deb("d1");
+      deb_lex("d1");
       if ($Token->data=="MOVE") {$Token->type="Instruction";return $Token;}
       if ($Token->data=="CREATEFRAME") {$Token->type="Instruction";return $Token;}
       if ($Token->data=="PUSHFRAME") {$Token->type="Instruction";return $Token;}

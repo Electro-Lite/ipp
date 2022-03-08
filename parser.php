@@ -7,7 +7,8 @@ if (!$fp) {
 include 'lex.php';
 include 'syn.php';
 // end headers
-syntax_f();
+$Token;
+echo syntax_f();
 /*
 for ($i=0; $i < 50; $i++) {
   echo "Token $i \n";
