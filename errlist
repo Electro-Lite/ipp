@@ -1,0 +1,9 @@
+0 Jestliže proběhne činnost skriptu bez chyb
+10 - chybějící parametr skriptu (je-li třeba) nebo použití zakázané kombinace parametrů;
+11 - chyba při otevírání vstupních souborů (např. neexistence, nedostatečné oprávnění);
+12 - chyba při otevření výstupních souborů pro zápis (např. nedostatečné oprávnění, chybapři zápisu);
+20 – 69 - návratové kódy chyb specifických pro jednotlivé skripty;
+99 - interní chyba (neovlivněná vstupními soubory či parametry příkazové řádky; např. chybaalokace paměti).
+--help dá 0 or 10• 21 - chybná nebo chybějící hlavička ve zdrojovém kódu zapsaném v IPPcode22;
+22 - neznámý nebo chybný operační kód ve zdrojovém kódu zapsaném v IPPcode22;
+ 23 - jiná lexikální nebo syntaktická chyba zdrojového kódu zapsaného v IPPcode22.
