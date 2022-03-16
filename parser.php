@@ -1,14 +1,17 @@
 <?php
 $fp = fopen('php://stdin', 'r');
 if (!$fp) {
-  echo 'Could not open file somefile.txt';
-  exit();
+  exit(11);
 }
 include 'lex.php';
 include 'syn.php';
 // end headers
 $Token;
-echo syntax_f();
+if (syntax_f()){
+  echo $dom->saveXML();
+  //$dom->save('result.xml') or die('XML Create Error');
+}
+
 /*
 for ($i=0; $i < 50; $i++) {
   echo "Token $i \n";

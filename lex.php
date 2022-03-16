@@ -1,25 +1,12 @@
 <?php
-function Get_Token_test() {
-  global $fp;
-  $data = "";
-
-  while(true){
-    if (feof($fp)!=false){return "got EOF";}
-    if (false === ($char = fgetc($fp))) {return "fgetc failed";}
-    if (($char==" ") or ($char=="\n")or ($char=="\r")) {
-      return $data;
-    }
-  $data.=$char;
-  }
-}
-
 function deb_lex($str){
   //echo("$str"."\n");
   return;
 }
+
 function Get_Token(){
   $Token=fce();
-  echo "Lex_";print_r($Token);
+  //echo "Lex_";print_r($Token);
   return $Token;
 }
 
@@ -27,15 +14,14 @@ function fce() {
   static $EOL_bool=false;
   $char="";
   $Token = new stdClass; $Token->data="";$Token->type="";
-  $letters="qwertzuioplkjhgfdsayxcvbnmQWERTZUIOPLKJHGFDSAYXCVBNM";
-  $numbers="0123456789";
-  $special="%*!?_$&";
+  $letters=" qwertzuioplkjhgfdsayxcvbnmQWERTZUIOPLKJHGFDSAYXCVBNM";
+  $numbers=" 0123456789";
+  $special=" %*!?_$&";
   global $fp;
   $state="s1";
   while(true){
-
     if(($char=="\n")or($char=="\r")){
-      if (($EOL_bool==false)and ($state!="d1")) {
+      if (($EOL_bool==false) and ($state!="d1")) {
         $Token->type="EOL";
         $EOL_bool=true;
         return $Token;
@@ -43,8 +29,8 @@ function fce() {
 
     }
     if ($state=="s1") {
-      if (false === ($char = fgetc($fp))) {if (feof($fp)) {$state="f3";$Token->data.=$char;continue;}exit("fgetc failed in s1");} //TODo unsure here
       deb_lex("s1");//print_r($Token);
+      if (false === ($char = fgetc($fp))) {if (feof($fp)) {$state="f3";$Token->data.=$char;continue;}exit(23);} //TODo unsure here
       if ($char==" ") {continue;}
       if ($char=="\n") {continue;}
       if ($char=="\r") {continue;}
@@ -56,18 +42,18 @@ function fce() {
     if ($state=="s2") {
       deb_lex("s2");
       for ($i=0; $i < 9; $i++) {
-        if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
+        if (false === ($char = fgetc($fp))) {exit(23);}
         $Token->data.=$char;
       }
       if ($Token->data==".IPPcode22") {
         $Token->type="header";
         return $Token;
-      }else{exit("header fail, expected .IPPcode22, got: $Token->data");}
+      }else{exit(21);}
     }
     if ($state=="s3") {
       deb_lex("s3");
       while (($char!="\n")and($char!="\r")) {
-        if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
+        if (false === ($char = fgetc($fp))) {if (feof($fp)) {$state="f3";$Token->data.=$char;continue;}exit(23);}
       }
       $state="s1";
       continue;
@@ -75,7 +61,7 @@ function fce() {
     if ($state=="s4") {
       deb_lex("s4");
       while (true) { //TODo white space # a tak
-        if (false === ($char = fgetc($fp))) {exit("s4 fgetc failed");}
+        if (false === ($char = fgetc($fp))) {if (feof($fp)) {$state="d1";break;}exit(23);}
         if ( ($char=="\n") or ($char==" ") or ($char=="\r") ) {
           $state="d1";
           break;
@@ -108,34 +94,35 @@ function fce() {
     }
     if ($state=="s8") {
       deb_lex("s8");
-      $Token->bool_data="";
-      if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
+      $Token->data_val="";
+      if (false === ($char = fgetc($fp))) {exit(23);}
         $Token->data.=$char;
-        $Token->bool_data.=$char;
+        $Token->data_val.=$char;
       if ($char=="t") {
         for ($i=0; $i < 3; $i++) {
-          if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
+          if (false === ($char = fgetc($fp))) {exit(23);}
           $Token->data.=$char;
-          $Token->bool_data.=$char;
+          $Token->data_val.=$char;
         }
-        if ($Token->bool_data=="true") {
+        if ($Token->data_val=="true") {
+          $Token->type="bool";
           return $Token;
-        }else{exit("s8 failed to check bool, expected true, got: $Token->bool_data");}
+        }else{exit(23);}
       }elseif($char=="f"){
         for ($i=0; $i < 4; $i++) {
-          if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
+          if (false === ($char = fgetc($fp))) {exit(23);}
           $Token->data.=$char;
-          $Token->bool_data.=$char;
+          $Token->data_val.=$char;
         }
-        if ($Token->bool_data=="false") {
+        if ($Token->data_val=="false") {
           return $Token;
-        }else{exit("s8 failed to check bool, expected false, got: $Token->bool_data");}
+        }else{exit(23);}
       }
     }
     if ($state=="s9") {
       deb_lex("s9");
       for ($i=0; $i < 3; $i++) {
-        if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
+        if (false === ($char = fgetc($fp))) {exit(23);}
         $Token->data.=$char;
       }
     }
@@ -145,25 +132,26 @@ function fce() {
     }
     if ($state=="f6") {
       deb_lex("f6");
-      $Token->string_data="";
+      $Token->data_val="";
       while (true) { //TODo # ? BTW nevyřešil jsem zde \ASCII
-        if (false === ($char = fgetc($fp))) {exit("f6 fgetc failed");}
+        if (false === ($char = fgetc($fp))) {exit(23);}
         if (($char=="\n")or($char==" ") or ($char=="\r")) {break;}
         $Token->data.=$char;
-        $Token->string_data.=$char;
+        $Token->data_val.=$char;
       }
       $Token->type="string";
       return $Token;
     }
     if ($state=="f8") {
       deb_lex("f8");
-      $Token->int_data="";
-      while (($char!="\n")and($char!=" ")and($char!="\r")) { //TODo # ? BTW nevyřešil jsem zde \ASCII
-        if (false === ($char = fgetc($fp))) {exit("exit_code x:fgetc failed");}
+      $Token->data_val="";
+      while (true) { //TODo # ? BTW nevyřešil jsem zde \ASCII
+        if (false === ($char = fgetc($fp))) {exit(23);}
+        if (($char=="\n")or($char==" ")or($char=="\r")) {break;}
         if ((strpos($numbers,$char)==false)) {
           exit("expected num, got $char");
         }
-        $Token->int_data.=$char;
+        $Token->data_val.=$char;
         $Token->data.=$char;
       }
       $Token->type="int";
@@ -173,7 +161,7 @@ function fce() {
       deb_lex("f9");
       $Token->type="variable";
       while (true) {
-        if (false === ($char = fgetc($fp))) {exit("f9 fgetc failed");}
+        if (false === ($char = fgetc($fp))) {exit(23);}
         if (($char=="\n")or($char==" ")or($char=="\r")) {return $Token;}
         if ((strpos($letters,$char)==false)and(strpos($special,$char)==false)) {
           exit("f9 unexpected char, got:$char");
