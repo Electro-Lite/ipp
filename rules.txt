@@ -1,4 +1,5 @@
 <program> -> IPPcode22 <body>
+<program> -> "--help"
 <body> -> <instruction> <body>
 <body> -> eps
 <instruction> -> <MOVE>
@@ -74,7 +75,9 @@
 <DPRINT> -> "DPRINT" <symb>
 <instruction> -> <BREAK>
 <BREAK> -> "BREAK"
-<type> ->
-<var> ->
-<symb> ->
-<label> ->
+<type> -> "int"
+<type> -> "bool"
+<type> -> "nil"
+<var> -> Token type variable
+<symb> -> Token type int, string, bool or nil
+<label> -> Token type label

@@ -55,6 +55,11 @@ function gen(){
     return;
   }
 }
+function help(){
+  echo"Skript typu filtr (v jazyce PHP 8.1) načte ze standardního vstupu zdrojový kód v IPPcode22, zkontroluje lexikální a syntaktickou správnost kódu a vypíše na standardní
+výstup XML reprezentaci";
+exit (0);
+}
 
 function syntax_f(){
    return program();
@@ -62,6 +67,15 @@ function syntax_f(){
 function program(){
   global $Token;
   $Token=Get_token();
+  if ($Token->type=="help") {
+    $Token=Get_token();
+    if ($Token->type=="EOF") {help();exit(0);}else {
+      if ($Token->type=="EOL") {
+        $Token=Get_token();
+        if ($Token->type=="EOF") {help();exit(0);}else {exit(10);}
+      }
+    }
+  }
   if ($Token->type=="header") {
     gen();
     $Token=Get_token();

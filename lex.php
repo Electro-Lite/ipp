@@ -34,6 +34,7 @@ function fce() {
       if ($char==" ") {continue;}
       if ($char=="\n") {continue;}
       if ($char=="\r") {continue;}
+      if ($char=="-") {$state="s10";$Token->data.=$char;continue;}
       if ($char==".") {$state="s2";$Token->data.=$char;continue;}
       if ($char=="#") {$state="s3";continue;}
       if ((strpos($letters,$char)!=false)or(strpos($numbers,$char)!=false)) {$state="s4";$Token->data.=$char;continue;}
@@ -207,6 +208,17 @@ function fce() {
       if ($Token->data=="BREAK") {$Token->type="Instruction";return $Token;}
       $Token->type="label";
       return $Token;
+    }
+    if ($state=="s10") {
+      deb_lex("s10");
+      for ($i=0; $i < 5; $i++) {
+        if (false === ($char = fgetc($fp))) {exit(23);}
+        $Token->data.=$char;
+      }
+      if ($Token->data=="--help") {
+        $Token->type="help";
+        return $Token;
+      }else{exit(21);}
     }
 
 
