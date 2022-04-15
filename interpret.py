@@ -1,5 +1,12 @@
 import xml.etree.ElementTree as ET
-###### Values
+##############
+# values
+##############
+class VarAccesNode:
+    def __init__(self,var_name_tok):
+        self.var_name_tok = var_name_tok
+        self.pos_start = self.var_name_tok.pos_start
+        self.pos_end = self.var_name_tok.pos_end
 class Number:
     def __init__(self, value):
         self.value = value
@@ -22,32 +29,92 @@ class Number:
             return Number(self.value / other.value)
     def __repr__(self):
         return str(self.value)
+######################
+# Symbol Table
+######################
+class SymbolTable:
+    def __init__(self):
+        self.symbols = {}
+        self.types = {}
+        self.parent = None
 
+    def get_val(self, name):
+        value = self.symbols.get(name, None)
+        if value == None and self.parent:
+            return self.parent.get(name)
+        return value
+    def get_type(self, name):
+        value = self.types.get(name, None)
+        if value == None and self.types:
+            return self.parent.get_type(name)
+        return value
 
+    def set(self, name, value, type):
+        self.symbols[name] = value
+        self.types[name] = type
+    def set_val(self, name, value):
+        self.symbols[name] = value
+    def set_type(self, name, type):
+        self.types[name] = type
+
+    def remove(self, name):
+        del self.symbols[name]
+
+######################
+# Error handling
+######################
+class Error:
+    def __init__(self, pos_start, pos_end, error_name, details):
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+        self.error_name = error_name
+        self.details = details
+
+    def as_string(self):
+        result  = f'{self.error_name}: {self.details}\n'
+        result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
+        result += '\n\n' + string_with_arrows(self.pos_start.ftxt, self.pos_start, self.pos_end)
+        return result
+class RTError(Error):
+    def __init__(self, pos_start, pos_end, details, context):
+        super().__init__(pos_start, pos_end, 'Runtime Error', details)
+        self.context = context
+######################
+# Context
+######################
+class Context:
+    def __init__(self,display_name,parent=None,parent_entry_pos=None):
+        self.display_name = display_name
+        self.parent = parent
+        self.parent_entry_pos = parent_entry_pos
+        self.symbol_table = None
 ######################
 # Intereter
 ######################
 class Interpreter:
-    def visit(self,node):
+    def visit(self,node,context):
         method_name=f'visit_{node.tag}Node'
         method = getattr(self,method_name,self.no_visit_method)
-        return method(node)
-    def no_visit_method(self, node):
-        raise Exception(f'No visit_{node.tag} method defined')
+        return method(node,context)
+    def no_visit_method(self, node,context):
+        if node.get("language")=="IPPcode22":
+            raise Exception(f'No visit_{node.tag} method defined')
+        else:
+            raise Exception(f'No visit_{node.get("opcode")} method defined')
     ################################
     # Interpet nodes general
     ################################
-    def visit_programNode(self, node):
+    def visit_programNode(self, node,context):
         print("found ProgramNode")
         a=len(list(node))
         for i in range(a):
-            self.visit(node[i])
-    def visit_instructionNode(self, node):
+            self.visit(node[i],context)
+    def visit_instructionNode(self, node,context):
         print("found Instruction node")
-        #self.visit(node.get("opcode"))
         inst = f'visit_{node.get("opcode")}Node'
         inst = getattr(self,inst,self.no_visit_method)
-        inst(node)
+        inst(node,context)
+        #inst(node,context)
     ################################
     # Interpet nodes arith
     ################################
@@ -86,17 +153,76 @@ class Interpreter:
     ################################
     # Interpet nodes IO
     ################################
-    def visit_WRITENode(self, node):
+    def visit_WRITENode(self, node,context):
         print("of type WRITE ")
         f = open("./out.txt", "a")
         f.write(node[0].text)
         f.close()
+    ################################
+    # Variavle Nodes
+    ################################
+    def visit_VarAccessNode(self, node, context):
+        #res = RTResult()
+        var_name = node.var_name_tok.value
+        value = context.symbol_table.get(var_name)
+
+        if not value:
+            return res.failure(RTError(
+            node.pos_start, node.pos_end,
+            f"'{var_name}' is not defined",
+            context
+            ))
+
+        value = value.copy().set_pos(node.pos_start, node.pos_end)
+        return res.success(value)
+    def visit_MOVENode(self, node, context):
+
+        print("it is MOVE node")
+        #res = RTResult()
+        target_var_name = node[0].text[3:]
+        target_var_frame=node[0].text[:2]
+        assign_type= node[1].get("type")
+        if assign_type == "var":
+            value=context.symbol_table.get(node[1].text[3:]) #TODO frames, so far only curF
+            type=value=context.symbol_table.get(node[1].text[3:])
+            context.symbol_table.set(target_var_name,value,type)
+        else:
+            value=node[1].text
+            type=node[1].get("type")
+            context.symbol_table.set(target_var_name,value,type)
+
+    def visit_DEFVARNode(self, node, context):
+        print("it is DEFVAR node")
+        #res = RTResult()
+        var_name = node[0].text[3:]
+        frame=node[0].text[:2]
+        #value = res.register(self.visit(node.value_node, context))
+        #if res.error: return res
+
+        context.symbol_table.set(var_name,"","")
+    def visit_ADDNode(self,node,context):
+        
+        print("it is ADD node")
+    def visit_MULNode(self,node,context):
+        print("it is MUL node")
+    def visit_SUBNode(self,node,context):
+        print("it is SUB node")
+    def visit_IDIVNode(self,node,context):
+        print("it is IDIV node")
+
 
 def run():
     #Parse xml
     tree=ET.parse('./ipp-2022-tests/interpret-only/arithmetic/correct.src')
+    #tree=ET.parse('./Testy/supplementary-tests/int-only/write_test.src')
     node=tree.getroot()
     # Run Program
     interpreter= Interpreter()
-    interpreter.visit(node)
+    # init context
+    context = Context('<program>')
+    #init symTable
+    global global_symbol_table
+    global_symbol_table = SymbolTable()
+    context.symbol_table=global_symbol_table
+    result=interpreter.visit(node,context)
 run()
