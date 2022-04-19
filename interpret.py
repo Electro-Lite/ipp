@@ -100,6 +100,7 @@ class Context:
         self.parent = parent
         self.parent_entry_pos = parent_entry_pos
         self.symbol_table = None
+        self.tmp_symbol_table = None
 ######################
 # Intereter
 ######################
@@ -408,6 +409,29 @@ class Interpreter:
         result=self.get_symb_type(node[1],context)
         context.symbol_table.set_val(node[0].text[3:],result)
         context.symbol_table.set_type(node[0].text[3:],"string")
+    ################################
+    # Frame op nodes
+    ################################
+    def visit_CREATEFRAMENode(self,node,context):
+        print("its CREATEFRAME node")
+        context.tmp_symbol_table=SymbolTable()
+    def visit_PUSHFRAMENode(self,node,context):
+        print("its PUSHFRAME node")
+        context.tmp_symbol_table.parent=context.symbol_table
+        context.symbol_table=context.tmp_symbol_table
+        context.tmp_symbol_table=None
+    def visit_POPFRAMENode(self,node,context):
+        print("its POPFRAME node")
+        context.tmp_symbol_table=context.symbol_table
+        context.symbol_table=context.symbol_table.parent
+    def print_Stack(self,node,context):
+        cur=context.symbol_table
+        count=1
+        while cur.parent:
+            count+=1
+            cur=cur.parent
+        print("stack depth: "+str(count))
+
 def run():
     #Parse xml
     tree=ET.parse('./ipp-2022-tests/interpret-only/arithmetic/correct2.src')
@@ -420,6 +444,16 @@ def run():
     #init symTable
     global global_symbol_table
     global_symbol_table = SymbolTable()
-    context.symbol_table=global_symbol_table
-    result=interpreter.visit(node,context)
+    local_symbol_table = SymbolTable()
+    tmp_symbol_table = SymbolTable()
+    context.symbol_table = tmp_symbol_table
+    context.symbol_table = local_symbol_table
+    #result=interpreter.visit(node,context)
+    interpreter.visit_CREATEFRAMENode(node,context)
+    interpreter.visit_PUSHFRAMENode(node,context)
+    interpreter.visit_CREATEFRAMENode(node,context)
+    interpreter.visit_PUSHFRAMENode(node,context)
+    interpreter.visit_POPFRAMENode(node,context)
+    interpreter.visit_POPFRAMENode(node,context)
+    interpreter.print_Stack(node,context)
 run()
