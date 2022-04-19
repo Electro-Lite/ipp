@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
-##############
+######################
 # values
-##############
+######################
 class VarAccesNode:
     def __init__(self,var_name_tok):
         self.var_name_tok = var_name_tok
@@ -165,10 +165,15 @@ class Interpreter:
     ################################
     # Interpet nodes IO
     ################################
-    def visit_WRITENode(self, node,context):
+    def visit_WRITENode(self, node,context):# nejsou nastavený na stdin
         print("of type WRITE ")
         f = open("./out.txt", "a")
         f.write(node[0].text)
+        f.close()
+    def visit_READNode(self, node,context):
+        print("of type READ ")
+        f = open("./out.txt", "a")
+        f.read(node[0].text)
         f.close()
     ################################
     # Variavle Nodes
@@ -191,10 +196,9 @@ class Interpreter:
         print("it is MOVE node")
         #res = RTResult()
         value= self.get_symb_value(node[1],context)
-        name = node[1].text[3:]
-        type = node[1].get("type")
-        context.symbol_table.set(name, value, type)
-
+        type = self.get_symb_type(node[1],context)
+        name = node[0].text[3:]
+        context.symbol_table.set(name , value, type)
     def visit_DEFVARNode(self, node, context):
         print("it is DEFVAR node")
         #res = RTResult()
@@ -231,8 +235,7 @@ class Interpreter:
         node_type=node.get("type")
         if node_type=="var":
             name=node.text[3:]
-            node_type= context.symbol_table.get_type(name)
-            exit(node_type)
+            node_type= context.symbol_table.get_type("var2")
             return node_type
         else:
             return node_type;
@@ -245,7 +248,6 @@ class Interpreter:
         context.symbol_table.set_val(node[0].text[3:],result)
         context.symbol_table.set_type(node[0].text[3:],"int")
         print(context.symbol_table.get_val(node[0].text[3:]))
-
     def visit_MULNode(self,node,context):
         print("it is MUL node, result: ",end="")
         result = self.get_symb_value(node[1],"int",context)
@@ -277,81 +279,135 @@ class Interpreter:
             if type=="int":
                 result= self.get_symb_value(node[1],context) < self.get_symb_value(node[2],context)
             elif type=="bool":
-                print("bs")
-                result= self.get_symb_value(node[1],context) < self.get_symb_value(node[1],context)
+                result= self.get_symb_value(node[1],context) < self.get_symb_value(node[2],context)
             elif type == "string":
                 result= self.get_symb_value(node[1],context) < self.get_symb_value(node[2],context)
             else:
                 exit("bad type")
-            if result==True:
-                result="true"
-            elif result==False:
-                result=False
         else:
-            exit(node[2].text)
             raise Exception("non matching types: " + type + " " + self.get_symb_type(node[2],context))
 
         context.symbol_table.set_val(node[0].text[3:],result)
         context.symbol_table.set_type(node[0].text[3:],"bool")
         print(" " + str(self.get_symb_value(node[1],context)) + " < " + str(self.get_symb_value(node[2],context)))
-        print (" " + str(result))
-        exit()
+        print ("     " + str(result))
     def visit_GTNode(self,node,context):
         print("its GT node")
-        print("its LT node")
         type=self.get_symb_type(node[1],context)
         if type==self.get_symb_type(node[2],context):
             if type=="int":
                 result= self.get_symb_value(node[1],context) > self.get_symb_value(node[2],context)
-            if type=="bool":
-                bool1=0
-                bool2=0
-                if self.get_symb_value(node[1],"bool",context):
-                    bool1=1
-                if self.get_symb_value(node[2],"bool",context):
-                    bool2=1
-                result=bool1 > bool2
-            if type == "string":
-                result= self.get_symb_value(node[1],"string",context) > self.get_symb_value(node[2],"string",context)
-            if result==True:
-                result="true"
-            elif result==False:
-                result="false"
+            elif type=="bool":
+                result= self.get_symb_value(node[1],context) > self.get_symb_value(node[2],context)
+            elif type == "string":
+                result= self.get_symb_value(node[1],context) > self.get_symb_value(node[2],context)
+            else:
+                exit("bad type")
+        else:
+            raise Exception("non matching types: " + type + " " + self.get_symb_type(node[2],context))
+
         context.symbol_table.set_val(node[0].text[3:],result)
         context.symbol_table.set_type(node[0].text[3:],"bool")
         print(" " + str(self.get_symb_value(node[1],context)) + " > " + str(self.get_symb_value(node[2],context)))
-        print (" " + result)
+        print ("     " + str(result))
     def visit_EQNode(self,node,context):
-        print("its EQ node")
-        print("its LT node")
+        print("\nits EQ node")
         type=self.get_symb_type(node[1],context)
         if type==self.get_symb_type(node[2],context):
             if type=="int":
                 result= self.get_symb_value(node[1],context) == self.get_symb_value(node[2],context)
-            if type=="bool":
-                bool1=0
-                bool2=0
-                if self.get_symb_value(node[1],context):
-                    bool1=1
-                if self.get_symb_value(node[2],context):
-                    bool2=1
-                result=bool1 == bool2
-            if type == "string":
+            elif type=="bool":
                 result= self.get_symb_value(node[1],context) == self.get_symb_value(node[2],context)
-            if result==True:
-                result="true"
-            elif result==False:
-                result="false"
+            elif type == "string":
+                result= self.get_symb_value(node[1],context) == self.get_symb_value(node[2],context)
+            else:
+                exit("bad type")
+        else:
+            raise Exception("non matching types: " + type + " " + self.get_symb_type(node[2],context))
+
         context.symbol_table.set_val(node[0].text[3:],result)
         context.symbol_table.set_type(node[0].text[3:],"bool")
         print(" " + str(self.get_symb_value(node[1],context)) + " == " + str(self.get_symb_value(node[2],context)))
-        print (" " + result)
+        print ("     " + str(result))
+
     def visit_ANDNode(self,node,context):
-        print("its AND node")
-        print(True>True)
-        exit()
-
-
+        print("\nits AND node")
+        if (self.get_symb_type(node[1], context)!="bool") or (self.get_symb_type(node[2], context)!="bool"):
+            raise Exception("Expected bool and bool, got: " + f'{self.get_symb_type(node[1], context)} and {self.get_symb_type(node[2], context)}')
+        result=self.get_symb_value(node[1], context) and self.get_symb_value(node[2], context)
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"bool")
+        print(f'{self.get_symb_value(node[1], context)} and {self.get_symb_value(node[2], context)}')
+        print(context.symbol_table.symbols)
+        print(result)
+    def visit_ORNode(self,node,context):
+        print("\nits OR node")
+        if (self.get_symb_type(node[1], context)!="bool") or (self.get_symb_type(node[2], context)!="bool"):
+            raise Exception("Expected bool and bool, got: " + f'{self.get_symb_type(node[1], context)} and {self.get_symb_type(node[2], context)}')
+        result=self.get_symb_value(node[1], context) or self.get_symb_value(node[2], context)
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"bool")
+        print(f'{self.get_symb_value(node[1], context)} or {self.get_symb_value(node[2], context)}')
+        print(context.symbol_table.symbols)
+        print(result)
+    def visit_NOTNode(self,node,context):
+        print("\nits NOT node")
+        if (self.get_symb_type(node[1], context)!="bool"):
+            raise Exception("Expected bool, got: " + f'{self.get_symb_type(node[1], context)}')
+        result= not self.get_symb_value(node[1], context)
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"bool")
+        print(f'{self.get_symb_value(node[1], context)}')
+        print(context.symbol_table.symbols)
+        print(result)
+    ################################
+    # Conversion nodes
+    ################################
+    def visit_INT2CHARNode(self,node,context):
+        print("its INT2CHAR node")
+        result= chr(self.get_symb_value(self,node[1],context))
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"string")
+    def visit_CHAR2INTNode(self,node,context):
+        print("its CHAR2INT node")
+        pos= self.get_symb_value(self,node[2],context)
+        result= self.get_symb_value(self,node[1],context)
+        result=ord(result[pos])
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"int")
+    ################################
+    # String op nodes
+    ################################
+    def visit_CONCATNode(self,node,context):
+        print("its CONCAT node")
+        result= self.get_symb_value(self,node[1],context) + self.get_symb_value(self,node[2],context)
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"string")
+    def visit_STRLENNode(self,node,context):
+        print("its STRLEN node")
+        result= len(self.get_symb_value(self,node[1],context))
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"int")
+    def visit_GETCHARNode(self,node,context):
+        print("its GETCHAR node")
+        pos= self.get_symb_value(self,node[2],context)
+        result= self.get_symb_value(self,node[1],context)
+        result=result[pos]
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"string")
+    def visit_SETCHARNode(self,node,context):
+        print("its SETCHAR node")
+        pos= self.get_symb_value(self,node[1],context)
+        set_to= self.get_symb_value(self,node[2],context)
+        set_to= set_to[0]
+        result=self.get_symb_value(self,node[0],context)
+        result=result[:pos] + set_to + result[pos+1:]
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"string")
+    def visit_TYPENode(self,node,context): #neplsňuje podmínky
+        result=self.get_symb_type(node[1],context)
+        context.symbol_table.set_val(node[0].text[3:],result)
+        context.symbol_table.set_type(node[0].text[3:],"string")
 def run():
     #Parse xml
     tree=ET.parse('./ipp-2022-tests/interpret-only/arithmetic/correct2.src')
